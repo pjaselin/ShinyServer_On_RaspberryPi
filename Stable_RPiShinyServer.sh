@@ -32,6 +32,7 @@ sudo apt-get -y update && sudo apt-get -y upgrade
 
 # Install Shiny Server as per https://github.com/rstudio/shiny-server/issues/347
 ## Clone the Shiny Server repository from GitHub
+mkdir -p ~/tmp
 git clone https://github.com/rstudio/shiny-server.git
 
 ## Copy the customer install-node.sh into the shiny-server file. This makes sure the right node version
@@ -44,10 +45,10 @@ shiny-server/packaging/make-package.sh
 ## Copy Shiny Server directory to system location
 sudo cp -r shiny-server/ /usr/local/
 
-# Place a shortcut to the shiny-server executable in /usr/bin
+# Place a link to the shiny-server executable in /usr/bin
 sudo ln -s /usr/local/shiny-server/bin/shiny-server /usr/bin/shiny-server
 
-#Create shiny user. On some systems, you may need to specify the full path to 'useradd'
+# Create shiny user. On some systems, you may need to specify the full path to 'useradd'
 sudo useradd -r -m shiny
 
 # Create log, config, and application directories
