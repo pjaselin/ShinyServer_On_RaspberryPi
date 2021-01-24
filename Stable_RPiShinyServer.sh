@@ -5,7 +5,7 @@
 # and: https://github.com/rstudio/shiny-server/wiki/Building-Shiny-Server-from-Source
 
 # Start at home directory
-cd
+cd ~/
 
 # Update/Upgrade Raspberry Pi
 sudo apt-get -y update && sudo apt-get -y upgrade
@@ -16,7 +16,7 @@ sudo apt-get -y install r-base
 # Install system libraries (dependences for some R packages)
 sudo apt-get -y install libssl-dev libcurl4-openssl-dev libboost-atomic-dev
 
-## Uninstall/Reinstall Pandoc (Shouldn't be initially installed but doing this for safety)
+## Uninstall/Reinstall Pandoc (Shouldn't be initially installed but doing this to ensure we have a clean install)
 sudo apt-get -y remove pandoc
 sudo apt-get -y install pandoc
 
@@ -32,15 +32,29 @@ sudo apt-get -y update && sudo apt-get -y upgrade
 
 # Install Shiny Server as per https://github.com/rstudio/shiny-server/issues/347
 ## Clone the Shiny Server repository from GitHub
-mkdir -p ~/tmp
+mkdir ~/tmp
+cd tmp
 git clone https://github.com/rstudio/shiny-server.git
+cd shiny-server
 
-## Copy the customer install-node.sh into the shiny-server file. This makes sure the right node version
-## is downloaded from npm for ARM processors
-cp ShinyServer_On_RaspberryPi/stable_support_files/install-node.sh shiny-server/external/node/install-node.sh 
+## Because we are on a Raspberry Pi, we need to edit the external/node/install-node.sh file to use 
+## an ARM-compatible NodeJS installation
+
+# Get the current Node version for shiny-server
+NODE_VERSION=$(cat .nvmrc)
+
+# Substitute the correct SHA256 into the install-node.sh file
+sed -i "/NODE_SHA256=/c\NODE_SHA256=$(wget -qO- https://nodejs.org/dist/${NODE_VERSION}/SHASUMS256.txt | grep 'linux-armv7l.tar.xz' |  sed -e 's/\s.*$//')" external/node/install-node.sh
+# Change x64 to armv7l for the Raspberry Pi
+sed -i 's/x64/armv7l/g' external/node/install-node.sh
+# Revert NODE_URL to previous format, pulling from nodejs.org url
+sed -i '/local NODE_URL/c\  local NODE_URL="https://nodejs.org/dist/${NODE_VERSION}/${NODE_FILENAME}"' external/node/install-node.sh
 
 ## Build Shiny Server
-shiny-server/packaging/make-package.sh
+packaging/make-package.sh
+
+## Remove pandoc from shiny-server repo as we'll use the system install
+rm -r ext/pandoc
 
 ## Copy Shiny Server directory to system location
 sudo cp -r shiny-server/ /usr/local/
@@ -61,8 +75,8 @@ sudo mkdir -p /etc/shiny-server
 # Return to Shiny Server directory and set shiny-server.conf
 cd shiny-server
 sudo cp config/default.config /etc/shiny-server/shiny-server.conf
-sudo cp -r /usr/local/shiny-server/ext/pandoc .
-sudo rm -r /usr/local/shiny-server/ext/pandoc/
+# sudo cp -r /usr/local/shiny-server/ext/pandoc .
+# sudo rm -r /usr/local/shiny-server/ext/pandoc/
 # Setup for start at boot: http://docs.rstudio.com/shiny-server/#systemd-redhat-7-ubuntu-15.04-sles-12
 # and: https://www.raspberrypi-spy.co.uk/2015/10/how-to-autorun-a-python-script-on-boot-using-systemd/
 sed -i -e "s:ExecStart=/usr/bin/env bash -c 'exec /opt/shiny-server/bin/shiny-server >> /var/log/shiny-server.log 2>&1':ExecStart=/usr/bin/shiny-server:g"  config/systemd/shiny-server.service

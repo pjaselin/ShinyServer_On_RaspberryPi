@@ -5,7 +5,7 @@ sudo systemctl stop shiny-server
 # remove service
 sudo rm /lib/systemd/system/shiny-server.service
 
-# remove dirs
+# remove shiny-server dirs
 sudo rm -r /srv/shiny-server
 sudo rm -r /var/log/shiny-server
 sudo rm -r  /var/lib/shiny-server
