@@ -37,7 +37,7 @@ sudo apt-get -y update && sudo apt-get -y upgrade
 mkdir ~/tmp && cd tmp
 git clone https://github.com/rstudio/shiny-server.git && cd shiny-server
 
-# Because we are on a Raspberry Pi, we need to edit the external/node/install-node.sh file to use an ARM-compatible NodeJS installation
+# Because we are on a Raspberry Pi, we need to edit the external/node/install-node.sh file to use an ARM-compatible NodeJS installation (https://github.com/nodejs/node#verifying-binaries)
 # Get the current Node version for shiny-server
 NODE_VERSION=$(cat .nvmrc)
 # Get and substitute the correct SHA256 into the install-node.sh file
