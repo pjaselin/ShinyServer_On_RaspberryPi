@@ -1,4 +1,4 @@
-# Install R Shiny Server (stable) on Raspberry Pi 3, tested January 11, 2020
+# Install R Shiny Server (stable) on Raspberry Pi 3, tested January 24, 2021
 # As per: https://github.com/rstudio/shiny-server/issues/347
 # and: https://www.rstudio.com/products/shiny/download-server/
 # and: https://cloud.r-project.org/bin/linux/debian/#debian-stretch-stable
@@ -55,6 +55,7 @@ packaging/make-package.sh
 
 ## Remove pandoc from shiny-server repo as we'll use the system install
 rm -r ext/pandoc
+cd ..
 
 ## Copy Shiny Server directory to system location
 sudo cp -r shiny-server/ /usr/local/
@@ -75,8 +76,7 @@ sudo mkdir -p /etc/shiny-server
 # Return to Shiny Server directory and set shiny-server.conf
 cd shiny-server
 sudo cp config/default.config /etc/shiny-server/shiny-server.conf
-# sudo cp -r /usr/local/shiny-server/ext/pandoc .
-# sudo rm -r /usr/local/shiny-server/ext/pandoc/
+
 # Setup for start at boot: http://docs.rstudio.com/shiny-server/#systemd-redhat-7-ubuntu-15.04-sles-12
 # and: https://www.raspberrypi-spy.co.uk/2015/10/how-to-autorun-a-python-script-on-boot-using-systemd/
 sed -i -e "s:ExecStart=/usr/bin/env bash -c 'exec /opt/shiny-server/bin/shiny-server >> /var/log/shiny-server.log 2>&1':ExecStart=/usr/bin/shiny-server:g"  config/systemd/shiny-server.service
@@ -86,10 +86,12 @@ sudo chmod 644 /lib/systemd/system/shiny-server.service
 sudo systemctl daemon-reload
 sudo systemctl enable shiny-server.service
 
-# Final Shiny Server Setup
+# Copy Sample apps and index.html to server
 sudo cp samples/welcome.html /srv/shiny-server/index.html
 sudo cp -r samples/sample-apps/ /srv/shiny-server/
 
+# Start Shiny Server
 sudo shiny-server &
+
 # Return to home directory
 cd
