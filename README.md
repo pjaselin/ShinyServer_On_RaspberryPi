@@ -1,4 +1,4 @@
-# Shiny Server on Raspberry Pi with R
+# Install Shiny Server on Raspberry Pi with R
 
 If you want to use place a Shiny Server on a Raspberry Pi, 1) yes the RPi can handle it! 2) these scripts will allow you to do it effortlessly. Regarding the performance of a Shiny Server on a Raspberry Pi, the device seems to handle it quite well and I haven't seen significant processing/speed issues.
 
