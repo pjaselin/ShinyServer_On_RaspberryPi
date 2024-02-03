@@ -21,5 +21,7 @@ jobs:
       with:
         commands: |
             ls
+            cd
+            ls
             bash StableInstall_RPiShinyServer.sh
             bash Uninstall_RPiShinyServer.sh
