@@ -20,5 +20,6 @@ jobs:
     - uses: pguyot/arm-runner-action@v2
       with:
         commands: |
+            ls
             bash StableInstall_RPiShinyServer.sh
             bash Uninstall_RPiShinyServer.sh
